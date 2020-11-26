@@ -1,22 +1,10 @@
-# EOSIO Manifest Specification
-[![EOSIO Labs](https://img.shields.io/badge/EOSIO-Labs-5cb3ff.svg)](#about-eosio-labs)
+# ARISEN Manifest Specification
+[![ARISEN Labs](https://img.shields.io/badge/ARISEN-Labs-5cb3ff.svg)](#about-eosio-labs)
 
 **Specification Version**: 0.7.0
 
 A specification for metadata describing integrating apps, and the actions they can request from a user. This specification can be used by wallets to provide more information about the app a user is interacting with, and to run transaction pre-flight security checks comparing the contents of a transaction request with what integrating apps have declared about themselves.
 
-## Related Reading
-
-This is just one of several thought leadership pieces focusing on wallets, key management and authentication, and the relating user experience. For more context and related reading, check out these these pieces:
-
-* [A Passwordless Future: Building Towards More Secure and Usable Authentication Systems](https://medium.com/eosio/a-passwordless-future-building-towards-more-secure-and-usable-authentication-systems-e188f07e4b87)
-* [EOSIO Labs™ Release: The Universal Authenticator Library (UAL) — Increasing the Accessibility of Blockchain Applications](https://medium.com/eosio/eosio-labs-release-the-universal-authenticator-library-ual-increasing-the-accessibility-of-8e2bd62a78a5)
-* [EOSIO Software Release: Ricardian Contract Specifications and the Ricardian Template Toolkit](https://medium.com/eosio/eosio-software-release-ricardian-contract-specifications-and-the-ricardian-template-toolkit-a0db787429d1)
-* [EOSIO Authentication Transport Protocol Specification](https://github.com/EOSIO/eosio-authentication-transport-protocol-spec)
-
-## About EOSIO Labs
-
-EOSIO Labs repositories are experimental.  Developers in the community are encouraged to use EOSIO Labs repositories as the basis for code and concepts to incorporate into their applications. Community members are also welcome to contribute and further develop these repositories. Since these repositories are not supported by Block.one, we may not provide responses to issue reports, pull requests, updates to functionality, or other requests from the community, and we encourage the community to take responsibility for these.
 
 ## Why an Application Manifest?
 1. Provides user agents metadata about the app for use in application listings (history, favorites, app directories, etc.)
@@ -24,13 +12,13 @@ EOSIO Labs repositories are experimental.  Developers in the community are encou
 1. Allows user agents to run various transaction pre-flight security assertions comparing the contents of a transaction request with what apps have declared about themselves
 1. Provides end users with more security and a better sense of trust--information about the apps they're using is displayed consistently and the transactions themselves are secured with on-chain assertions
 
-## Application Requirements for EOSIO User Agent Compatibility
+## Application Requirements for ARISEN User Agent Compatibility
 * The application must register an [application manifest](#application-manifest-specification) on each chain it wishes to transact on.
 * Developers must have publicly-accessible `chain-manifests.json` and `app-metadata.json` files.
 * The `chain-manifests.json` file must be at the root of the application's declared domain or subdomain.
 
 ### How It Works
-1. In order for an EOSIO-enabled application to be compatible with EOSIO user agents, developers must submit an [app manifest](#application-manifest-specification) to the EOSIO chains on which it wishes to push transactions.
+1. In order for an ARISEN-enabled application to be compatible with ARISEN user agents, developers must submit an [app manifest](#application-manifest-specification) to the ARISEN chains on which it wishes to push transactions.
 1. When the application makes a request or proposes a transaction, it must pass along a `declaredDomain`. The user agent will verify the following items. If any fails verification, an error will be displayed to the user or returned to the application. It will verify:
     * that the domain is hosting a `chain-manifests.json` file and that all manifests listed reference the declared domain and app metadata consistently;
     * that the domain is hosting a `app-metadata.json` file and that it contains all required fields;
@@ -39,7 +27,7 @@ EOSIO Labs repositories are experimental.  Developers in the community are encou
     * that the contract action(s) in the transaction are whitelisted in the manifest;
     * that the hash of the icon in `app-metadata.json` matches the checksum of the icon file itself;
     * that the hash of `app-metadata.json` matches the hash declared in the provided manifest;
-1. When the user accepts the transaction, the user agent will hash the manifest and add an [assertion action](https://github.com/EOSIO/eosio.assert) to the transaction so that the chain can validate that the manifest provided to the user agent has been registered for the given domain on that chain. If the manifest's hash is not found on the chain, the chain may reject the transaction.
+1. When the user accepts the transaction, the user agent will hash the manifest and add an [assertion action](https://github.com/ARISENIO/arisen.assert) to the transaction so that the chain can validate that the manifest provided to the user agent has been registered for the given domain on that chain. If the manifest's hash is not found on the chain, the chain may reject the transaction.
 
 ## Specification Versioning
 
@@ -52,7 +40,7 @@ Fields are interpretted as follows:
 * **Major**: Backward-incompatible changes to the spec and schema. This would include changes such as adding new _required_ fields or tightening of requirements. A manifest based on spec x._ is **NOT** required to be verifiable against spec y._ where x < y.
 
 ## Application Metadata Specification
-Application metadata must be declared in a publicly available JSON file. The location of this file, along with its checksum hash, will be referenced by the EOSIO chain(s). Having this file referenced on-chain enables EOSIO-compatible user agents to validate the integrity of the metadata and may provide other future benefits. For example, developers could look for these records on the chain and put together public directories of EOSIO-compatible applications.
+Application metadata must be declared in a publicly available JSON file. The location of this file, along with its checksum hash, will be referenced by the ARISEN chain(s). Having this file referenced on-chain enables ARISEN-compatible user agents to validate the integrity of the metadata and may provide other future benefits. For example, developers could look for these records on the chain and put together public directories of ARISEN-compatible applications.
 
 All of the following fields are required with the exception of `description`, `sslfingerprint`, and `appIdentifiers`.
 
@@ -62,7 +50,7 @@ All of the following fields are required with the exception of `description`, `s
 * `shortname`: A shorter name for the application.
 * `scope`: An absolute path relative to the application's root. (`/` or `/app`, but not `../`)
 * `apphome`: Tells the browser where your application should start when it is launched. This must fall within the scope.
-* `icon`: An HTTPS url or absolute path relative to the application's root followed by a SHA-256 checksum hash. May be displayed in app listings, history, favorites, etc. (`https://landeos.io/icon.png#SHA256HASH` or `/icon.png#SHA256HASH`, but not `../icon.png#SHA256HASH`)
+* `icon`: An HTTPS url or absolute path relative to the application's root followed by a SHA-256 checksum hash. May be displayed in app listings, history, favorites, etc. (`dweb://dsocial.dcom/icon.png#SHA256HASH` or `/icon.png#SHA256HASH`, but not `../icon.png#SHA256HASH`)
 * `appIdentifiers`: Optional. For native applications, an array of whitelisted app identifiers. (e.g., bundle identifiers for iOS apps, package names for Android apps)
 * `description`: Optional. A paragraph about your application. May be displayed in app listings, etc.
 * `sslfingerprint`: Optional. Your app domain's SSL SHA-256 fingerprint as a hex string. If present, the user agent may check that the SSL fingerprint of the domain submitting the transaction matches that in the provided manifest.
@@ -74,24 +62,24 @@ All of the following fields are required with the exception of `description`, `s
 ```json
 {
   "spec_version": "0.7.0",
-  "name": "Landeos Property Registry",
+  "name": "dSocial",
   "shortname": "Landeos",
   "scope": "/",
   "apphome": "/home",
-  "icon": "https://landeos.io/icon.png#SHA256HASH",
-  "appIdentifiers": ["io.landeos.registry"],
-  "description": "Landeos is a decentralized property registry...",
+  "icon": "dweb://dsocial.dcom/icon.png#SHA256HASH",
+  "appIdentifiers": ["dcom.dsocial.network"],
+  "description": "dSocial is a decentralized social network...",
   "sslfingerprint": "E1 3F 0E 03 2D 05 3C D2 81 FB 57 02 42 51 D0 44 32 08 35 58 8C 73 C4 44 83 4D CA 3E 71 15 16 20",
   "chains": [
     {
-      "chainId": "EOSIO1111",
-      "chainName": "Property Chain",
-      "icon": "/propertyChain.png#SHA256HASH"
+      "chainId": "ARISEN",
+      "chainName": "ARISEN Mainnet",
+      "icon": "/arisenMainnet.png#SHA256HASH"
     },
     {
-      "chainId": "EOSIO2222",
-      "chainName": "Other Chain",
-      "icon": "/otherChain.png#SHA256HASH"
+      "chainId": "DSOCIAL",
+      "chainName": "dSocial Chain",
+      "icon": "/dsocialChain.png#SHA256HASH"
     }
   ]
 }
@@ -100,14 +88,14 @@ All of the following fields are required with the exception of `description`, `s
 This specification will be extended later to include additional application metadata (e.g., app screenshots and other listing-related data.)
 
 ## Application Manifest Specification
-Manifests must be registered using the `eosio.assert::add.manifest` action on every chain on which your app will transact. (See: https://github.com/EOSIO/eosio.assert.) Furthermore, an array of chain manifests must be declared in a publicly available JSON file at the root of the application's `declaredDomain`.
+Manifests must be registered using the `arisen.assert::add.manifest` action on every chain on which your app will transact. (See: https://github.com/ARISENIO/arisen.assert.) Furthermore, an array of chain manifests must be declared in a publicly available JSON file at the root of the application's `declaredDomain`.
 
 ### Manifest Fields
 * `account`: The chain account name. This is the account that registered the application manifest.
 * `domain`: The uri or bundle identifier.
 * `appmeta`: The publicly-accessible location of the application metadata JSON file and its hash. Must be an absolute path.
 * `whitelist`: An array containing the `contract` and `action` for each allowed contract action(s) that your app can propose.
-    * The `contract` and/or `action` fields within the `whitelist` on the manifest may contain a wildcard. Wildcards are denoted by `""` (empty string). For example, the manifest below whitelists all `eosio.token` actions and another specific contract action.
+    * The `contract` and/or `action` fields within the `whitelist` on the manifest may contain a wildcard. Wildcards are denoted by `""` (empty string). For example, the manifest below whitelists all `arisen.token` actions and another specific contract action.
 
 ```javascript
 {
@@ -129,16 +117,16 @@ Manifests must be registered using the `eosio.assert::add.manifest` action on ev
 ### Example
 ```json
 {
-  "account": "landeospropr",
-  "domain": "https://landeos.io",
-  "appmeta": "https://landeos.io/app-metadata.json#SHA256HASH",
+  "account": "dSocial",
+  "domain": "dweb://dsocial.dcom",
+  "appmeta": "dweb://dsocial.dcom/app-metadata.json#SHA256HASH",
   "whitelist": [
     {
-      "contract": "eosio.token",
+      "contract": "arisen.token",
       "action": ""
     },
     {
-      "contract": "landeospropr",
+      "contract": "dSocial",
       "action": "register"
     }
   ]
@@ -160,36 +148,36 @@ Here's an example:
   "spec_version": "0.0.7",
   "manifests": [
     {
-      "chainId": "EOSIO1111",
+      "chainId": "ARISEN",
       "manifest": {
-        "account": "landeospropr",
-        "domain": "https://landeos.io",
-        "appmeta": "https://landeos.io/app-metadata.json#SHA256HASH",
+        "account": "dSocial",
+        "domain": "dweb://dsocial.dcom",
+        "appmeta": "dweb://dsocial.dcom/app-metadata.json#SHA256HASH",
         "whitelist": [
           {
-            "contract": "eosio.token",
+            "contract": "arisen.token",
             "action": ""
           },
           {
-            "contract": "landeospropr",
+            "contract": "dSocial",
             "action": "register"
           }
         ]
       }
     },
     {
-      "chainId": "EOSIO2222",
+      "chainId": "DSOCIAL",
       "manifest": {
-        "account": "landeospropr",
-        "domain": "https://landeos.io",
-        "appmeta": "https://landeos.io/app-metadata.json#SHA256HASH",
+        "account": "dSocial",
+        "domain": "dweb://dsocial.dcom",
+        "appmeta": "dweb://dsocial.dcom/app-metadata.json#SHA256HASH",
         "whitelist": [
           {
-            "contract": "eosio.token",
+            "contract": "arisen.token",
             "action": ""
           },
           {
-            "contract": "landeospropr",
+            "contract": "dSocial",
             "action": "register"
           }
         ]
@@ -208,9 +196,3 @@ Here's an example:
 ## License
 
 [MIT](./LICENSE)
-
-## Important
-
-See LICENSE for copyright and license terms.  Block.one makes its contribution on a voluntary basis as a member of the EOSIO community and is not responsible for ensuring the overall performance of the software or any related applications.  We make no representation, warranty, guarantee or undertaking in respect of the software or any related documentation, whether expressed or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose and noninfringement. In no event shall we be liable for any claim, damages or other liability, whether in an action of contract, tort or otherwise, arising from, out of or in connection with the software or documentation or the use or other dealings in the software or documentation. Any test results or performance figures are indicative and will not reflect performance under all conditions.  Any reference to any third party or third-party product, service or other resource is not an endorsement or recommendation by Block.one.  We are not responsible, and disclaim any and all responsibility and liability, for your use of or reliance on any of these resources. Third-party resources may be updated, changed or terminated at any time, so the information here may be out of date or inaccurate.  Any person using or offering this software in connection with providing software, goods or services to third parties shall advise such third parties of these license terms, disclaimers and exclusions of liability.  Block.one, EOSIO, EOSIO Labs, EOS, the heptahedron and associated logos are trademarks of Block.one.
-
-Wallets and related components are complex software that require the highest levels of security.  If incorrectly built or used, they may compromise users’ private keys and digital assets. Wallet applications and related components should undergo thorough security evaluations before being used.  Only experienced developers should work with this software.
